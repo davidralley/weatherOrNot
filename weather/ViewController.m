@@ -22,8 +22,8 @@
     [super viewDidLoad];
     
     //register to be able to deliver notifications, in case it's going to rain
-    UIUserNotificationSettings* notificationSettings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert categories:nil];
-    [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
+//    UIUserNotificationSettings* notificationSettings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert categories:nil];
+//    [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
     
     [self loadData];    //load the data stored from the last run
     
@@ -103,59 +103,112 @@
     [refreshControl endRefreshing];
 }
 
+//----------------------------------------------------------------------------------
+//  fetchWeatherForCity
+//----------------------------------------------------------------------------------
+//use the current location to fetch the weather
+-(void)fetchWeatherForCity{
+    
+    NSString* theAppID = @"16b0456f011b3fb9f3dc9840966f9966";
+    
+    //build the URL using the information held by the location variable
+    NSString* theString = [NSString stringWithFormat:@"http://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f&cnt=16&units=imperial&APPID=%@",
+                           self.currentLocation.coordinate.latitude, self.currentLocation.coordinate.longitude, theAppID];
+    NSURL*  theURL = [NSURL URLWithString: theString];
+    
+    //build the request to openweathermap
+    NSURLSessionDownloadTask *getWeatherTask = [[NSURLSession sharedSession] downloadTaskWithURL:theURL completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
+        
+        NSData* theReceivedData =  [NSData dataWithContentsOfURL:location];
+        //serialize the NSData into an NSDictionary
+        self.weatherDictionary = [NSJSONSerialization JSONObjectWithData:theReceivedData options:(NSJSONReadingMutableLeaves + NSJSONReadingMutableContainers) error:nil];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            //[self.weatherTable reloadData];
+            [self setCurrentCityText];          //make sure the city text is up-to-date
+            [self setCurrentTemperature];       //update the current temperature
+            [self setCurrentWeatherDescription];    //update the short description of the current weather
+        });
+        
+        
+    }];
+    
+    [getWeatherTask resume];
+    
+    
+}
 
 //----------------------------------------------------------------------------------
 //  getWeatherAtCurrentLocation
 //----------------------------------------------------------------------------------
-//use the current location to fetch 16 days worth of weather from http://openweathermap.org/forecast16
+//use the current location to fetch the weather
 -(void)getWeatherAtCurrentLocation{
     
+    NSString* theAppID = @"16b0456f011b3fb9f3dc9840966f9966";
+    
     //build the URL using the information held by the location variable
-    NSString* theURL = [NSString stringWithFormat:@"http://api.openweathermap.org/data/2.5/forecast/daily?lat=%f&lon=%f&cnt=16&units=imperial",
-                        self.currentLocation.coordinate.latitude, self.currentLocation.coordinate.longitude];
+    NSString* theString = [NSString stringWithFormat:@"http://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f&cnt=16&units=imperial&APPID=%@",
+                        self.currentLocation.coordinate.latitude, self.currentLocation.coordinate.longitude, theAppID];
+    NSURL*  theURL = [NSURL URLWithString: theString];
    
     //build the request to openweathermap
-    NSURLRequest *theRequest=[NSURLRequest requestWithURL:[NSURL URLWithString: theURL]
-                                              cachePolicy:NSURLRequestUseProtocolCachePolicy
-                                          timeoutInterval:60.0];
+    NSURLSessionDownloadTask *getWeatherTask = [[NSURLSession sharedSession] downloadTaskWithURL:theURL completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
+        
+        NSData* theReceivedData =  [NSData dataWithContentsOfURL:location];
+        //serialize the NSData into an NSDictionary
+        self.weatherDictionary = [NSJSONSerialization JSONObjectWithData:theReceivedData options:(NSJSONReadingMutableLeaves + NSJSONReadingMutableContainers) error:nil];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            //[self.weatherTable reloadData];
+            [self setCurrentCityText];          //make sure the city text is up-to-date
+            [self setCurrentTemperature];       //update the current temperature
+            [self setCurrentWeatherDescription];    //update the short description of the current weather
+        });
+        
+        
+    }];
     
-    //note that the code below is depricated, and can be replaced by an async call that uses a completion handler.
-    //the same thing can be done using Grand Central Dispatch
-    /*dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-     NSDictionary *stats = [myDoc analyze];
-     dispatch_async(dispatch_get_main_queue(), ^{
-     [myModel setDict:stats];
-     [myStatsView setNeedsDisplay:YES];
-     });
-     });
-     */
-    // make the connection to get the received data.
-    NSURLResponse *response;
-    NSData* theReceivedData = [NSURLConnection sendSynchronousRequest:theRequest
-                                             returningResponse:&response error:nil];
+    [getWeatherTask resume];
     
-    //serialize the NSData into an NSDictionary
-    self.weatherDictionary = [NSJSONSerialization JSONObjectWithData:theReceivedData options:(NSJSONReadingMutableLeaves + NSJSONReadingMutableContainers) error:nil];
-    //NSLog(@"dictionary data %@",self.weatherDictionary);
+    
+ }
 
-    [self setCurrentCityText];          //make sure the city text is up-to-date
-    [self setCurrentTemperature];       //update the current temperature
-    [self setCurrentWeatherDescription];    //update the short description of the current weather
-    [self notifyIfRainInForecast];          //show notification if rain is expected in the next 48 hours
+//----------------------------------------------------------------------------------
+//  fetchWeatherIcon
+//----------------------------------------------------------------------------------
+//use the current location to fetch the weather
+-(void)fetchWeatherIcon:(NSString *)inIconString{
     
-    //tell the table in the UI to refresh with the new data
-    [self.weatherTable reloadData];
+    
+    //build the URL for the correct image
+    NSString* theString = [NSString stringWithFormat:@"http://api.openweathermap.org/img/w/%@.png",
+                           inIconString];
+    NSURL*  theURL = [NSURL URLWithString: theString];
+    
+    //build the request to openweathermap
+    NSURLSessionDownloadTask *getWeatherTask = [[NSURLSession sharedSession] downloadTaskWithURL:theURL completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
+        
+        UIImage* theImage =  [UIImage imageWithData: [NSData dataWithContentsOfURL:location]];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.weatherIcon setImage:theImage];
+        });
+        
+        
+    }];
+    
+    [getWeatherTask resume];
+    
 }
-
 //----------------------------------------------------------------------------------
 //  setCurrentCityText
 //----------------------------------------------------------------------------------
 // set the current city label in the interface
 -(void)setCurrentCityText{
     
-    NSDictionary* theCityDict = self.weatherDictionary[@"city"];
-    NSString* theCityName = theCityDict[@"name"];
+    NSString* theCityName = self.weatherDictionary[@"name"];
     self.cityLabel.text = theCityName;
+    [self.cityLabel setNeedsDisplay];
 }
 
 //----------------------------------------------------------------------------------
@@ -164,12 +217,10 @@
 // set the current temperature lablel
 -(void)setCurrentTemperature{
 
-    NSArray*    theForecastArray = self.weatherDictionary[@"list"];
-    NSDictionary* theDailyForecast = theForecastArray[0];
-    NSDictionary* theTemperatures = theDailyForecast[@"temp"];
-    double theCurrentTemp = ceil([theTemperatures[@"day"] doubleValue]);
+    NSDictionary*    theCurrentConditions = self.weatherDictionary[@"main"];
+    NSNumber* theTemperature = theCurrentConditions[@"temp"];
     
-    self.temperatureLabel.text = [NSString stringWithFormat:@"%.0f", theCurrentTemp];
+    self.temperatureLabel.text = [NSString stringWithFormat:@"%.0f\u00B0", [theTemperature floatValue]];
 }
 
 //----------------------------------------------------------------------------------
@@ -178,14 +229,16 @@
 // set the current weather description lablel
 -(void)setCurrentWeatherDescription{
     
-    NSArray*    theForecastArray = self.weatherDictionary[@"list"];
-    NSDictionary* theDailyForecast = theForecastArray[0];
-    NSArray* theWeatherInfo = theDailyForecast[@"weather"];
+    NSArray* theWeatherInfo = self.weatherDictionary[@"weather"];
     NSDictionary* theWeatherInfoDict= theWeatherInfo[0];
     NSString* todaysWeatherDecription = theWeatherInfoDict[@"description"];
     
     //get the current short weather description
     self.weatherDescriptionLabel.text = todaysWeatherDecription;
+    
+    //get the correct icon for this weather
+    NSString* theWeatherIcon = theWeatherInfoDict[@"icon"];
+    [self fetchWeatherIcon:theWeatherIcon];
 }
 
 //----------------------------------------------------------------------------------
@@ -214,21 +267,7 @@
         return false;
 }
 
-//----------------------------------------------------------------------------------
-//  notifyIfRainInForecast
-//----------------------------------------------------------------------------------
-// show a notification if there's rain expected in the next 48 hours
--(void)notifyIfRainInForecast{
-    
-    if ([self isRainInForecast]){
-        UILocalNotification* localNotification = [[UILocalNotification alloc] init];
-        localNotification.fireDate = [NSDate dateWithTimeIntervalSinceNow:1];      //1 second from now
-        localNotification.alertBody = @"Rain on the way!";
-        localNotification.timeZone = [NSTimeZone defaultTimeZone];
-        [[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
-    }
 
-}
 
 #pragma mark location routines
 
@@ -385,6 +424,20 @@
     theLowLabel.text = [NSString stringWithFormat:@"%.0f", theLowTemp];
     
     return cell;
+}
+
+#pragma mark- search bar
+//—————————————————————————————————————————————————————————————————————————————————————————————
+//                  searchBar:textDidChange
+//—————————————————————————————————————————————————————————————————————————————————————————————
+//  the user initiated a search, so look up that location
+
+
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar{
+    
+    NSString* theNewCity = searchBar.text;
+    [self fetchWeatherForCity:theNewCity];
 }
 
 @end

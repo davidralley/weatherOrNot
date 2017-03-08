@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 @import CoreLocation;
 
-@interface ViewController : UIViewController <CLLocationManagerDelegate, UITableViewDelegate, UITableViewDataSource>
+@interface ViewController : UIViewController <CLLocationManagerDelegate, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate>
 
 @property (strong, nonatomic) CLLocationManager* locationManager;
 @property (strong, nonatomic) CLLocation*        currentLocation;       //the current location of the phone
@@ -20,6 +20,7 @@
 @property (strong) IBOutlet UILabel*     cityLabel;
 @property (strong) IBOutlet UILabel*     temperatureLabel;
 @property (strong) IBOutlet UILabel*     weatherDescriptionLabel;
+@property (strong) IBOutlet UIImageView* weatherIcon;
 
 -(void)saveData;
 -(void)loadData;
