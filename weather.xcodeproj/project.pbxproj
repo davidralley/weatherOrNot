@@ -13,7 +13,10 @@
 		631F68191BA49F7500865ED0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 631F68171BA49F7500865ED0 /* Main.storyboard */; };
 		631F681B1BA49F7500865ED0 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 631F681A1BA49F7500865ED0 /* Images.xcassets */; };
 		631F681E1BA49F7500865ED0 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 631F681C1BA49F7500865ED0 /* LaunchScreen.xib */; };
-		631F682A1BA49F7500865ED0 /* weatherTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 631F68291BA49F7500865ED0 /* weatherTests.m */; };
+		6370132E1BA4AD1500F3907A /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6370132D1BA4AD1500F3907A /* CoreLocation.framework */; };
+		637013311BA608BB00F3907A /* sunnySky.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 637013301BA608BB00F3907A /* sunnySky.jpg */; };
+		63B53BBC1BAC7B7400237426 /* WeatherUnitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B53BBB1BAC7B7400237426 /* WeatherUnitTests.m */; };
+		63B53BBE1BAD0CC800237426 /* libOCMock.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63B53BBD1BAD0CC800237426 /* libOCMock.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,7 +42,10 @@
 		631F681D1BA49F7500865ED0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		631F68231BA49F7500865ED0 /* weatherTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = weatherTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		631F68281BA49F7500865ED0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		631F68291BA49F7500865ED0 /* weatherTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = weatherTests.m; sourceTree = "<group>"; };
+		6370132D1BA4AD1500F3907A /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		637013301BA608BB00F3907A /* sunnySky.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = sunnySky.jpg; sourceTree = "<group>"; };
+		63B53BBB1BAC7B7400237426 /* WeatherUnitTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeatherUnitTests.m; sourceTree = "<group>"; };
+		63B53BBD1BAD0CC800237426 /* libOCMock.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libOCMock.a; path = usr/lib/libOCMock.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6370132E1BA4AD1500F3907A /* CoreLocation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -54,6 +61,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63B53BBE1BAD0CC800237426 /* libOCMock.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -63,6 +71,8 @@
 		631F68011BA49F7500865ED0 = {
 			isa = PBXGroup;
 			children = (
+				63B53BBD1BAD0CC800237426 /* libOCMock.a */,
+				6370132D1BA4AD1500F3907A /* CoreLocation.framework */,
 				631F680C1BA49F7500865ED0 /* weather */,
 				631F68261BA49F7500865ED0 /* weatherTests */,
 				631F680B1BA49F7500865ED0 /* Products */,
@@ -81,6 +91,7 @@
 		631F680C1BA49F7500865ED0 /* weather */ = {
 			isa = PBXGroup;
 			children = (
+				6370132F1BA6089600F3907A /* Resources */,
 				631F68111BA49F7500865ED0 /* AppDelegate.h */,
 				631F68121BA49F7500865ED0 /* AppDelegate.m */,
 				631F68141BA49F7500865ED0 /* ViewController.h */,
@@ -105,7 +116,7 @@
 		631F68261BA49F7500865ED0 /* weatherTests */ = {
 			isa = PBXGroup;
 			children = (
-				631F68291BA49F7500865ED0 /* weatherTests.m */,
+				63B53BBB1BAC7B7400237426 /* WeatherUnitTests.m */,
 				631F68271BA49F7500865ED0 /* Supporting Files */,
 			);
 			path = weatherTests;
@@ -117,6 +128,14 @@
 				631F68281BA49F7500865ED0 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		6370132F1BA6089600F3907A /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				637013301BA608BB00F3907A /* sunnySky.jpg */,
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -202,6 +221,7 @@
 				631F68191BA49F7500865ED0 /* Main.storyboard in Resources */,
 				631F681E1BA49F7500865ED0 /* LaunchScreen.xib in Resources */,
 				631F681B1BA49F7500865ED0 /* Images.xcassets in Resources */,
+				637013311BA608BB00F3907A /* sunnySky.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -229,7 +249,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				631F682A1BA49F7500865ED0 /* weatherTests.m in Sources */,
+				63B53BBC1BAC7B7400237426 /* WeatherUnitTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -299,7 +319,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -336,7 +356,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -348,6 +368,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = weather/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -358,6 +379,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = weather/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -375,8 +397,18 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(PROJECT_DIR)/usr/include",
+				);
 				INFOPLIST_FILE = weatherTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/usr/lib",
+				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/weather.app/weather";
 			};
@@ -390,8 +422,18 @@
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
 				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(PROJECT_DIR)/usr/include",
+				);
 				INFOPLIST_FILE = weatherTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/usr/lib",
+				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/weather.app/weather";
 			};
@@ -416,6 +458,7 @@
 				631F682F1BA49F7500865ED0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		631F68301BA49F7500865ED0 /* Build configuration list for PBXNativeTarget "weatherTests" */ = {
 			isa = XCConfigurationList;
@@ -424,6 +467,7 @@
 				631F68321BA49F7500865ED0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
