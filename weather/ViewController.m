@@ -25,14 +25,20 @@
 //    UIUserNotificationSettings* notificationSettings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert categories:nil];
 //    [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
     
-    NSError* error = nil;
-    NSString *path = [[NSBundle mainBundle] pathForResource: @"city.list.us" ofType: @"json"];
-    NSString *theCityStrings = [NSString stringWithContentsOfFile: path encoding:NSUTF8StringEncoding error: &error];
-    NSData *data = [theCityStrings dataUsingEncoding:NSUTF8StringEncoding];
-    self.cityDictionary = [NSJSONSerialization JSONObjectWithData:data
-                                                                 options:kNilOptions
-                                                                   error:&error];
-    
+      //load the json file with city strings in it to help guide the user while entering a new city
+//    NSError* error = nil;
+//    NSString *path = [[NSBundle mainBundle] pathForResource: @"city.list.us" ofType: @"json"];
+//    NSString *theCityStrings = [NSString stringWithContentsOfFile: path encoding:NSUTF8StringEncoding error: &error];
+//    NSData *data = [theCityStrings dataUsingEncoding:NSUTF8StringEncoding];
+//    self.cityDictionary = [NSJSONSerialization JSONObjectWithData:data
+//                                                                 options:kNilOptions
+//                                                                   error:&error];
+    //initialize the array of weather icons
+    self.weatherImage = [NSMutableArray arrayWithCapacity:20];
+    for (NSInteger i = 0; i < 20; ++i)
+    {
+        [self.weatherImage addObject:[NSNull null]];
+    }
     
     [self loadData];    //load the data stored from the last run
     
@@ -74,7 +80,9 @@
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString *savePath = [documentsDirectory stringByAppendingPathComponent:@"weather.dat"];
     
-    [self.weatherDictionary writeToFile: savePath atomically: YES];
+    //[self.weatherDictionary writeToFile: savePath atomically: NO];
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:self.weatherDictionary];
+    [data writeToFile:savePath atomically:YES];
 }
 
 //----------------------------------------------------------------------------------
@@ -89,15 +97,26 @@
     NSString *loadPath = [documentsDirectory stringByAppendingPathComponent:@"weather.dat"];
     
      @try {
-         self.weatherDictionary = [NSKeyedUnarchiver unarchiveObjectWithFile:loadPath];
+         
+         //self.weatherDictionary = [NSKeyedUnarchiver unarchiveObjectWithFile:loadPath];
+         NSData *data = [NSData dataWithContentsOfFile:loadPath];
+         self.weatherDictionary = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+         
      } @catch (NSException* exception) {
          // There won't be any cached data on the first run, so we expect to be here initially
          // Surpress any unarchiving exceptions and continue with nil
          NSLog(@"Weather table from cache was failed with exception: %@", [exception reason]);
      }
     
-    //load the table with that data
+    //populate the UI with that data
     [self.weatherTable reloadData];
+    [self setCurrentCityText];          //make sure the city text is up-to-date
+    [self setCurrentTemperature];       //update the current temperature
+    [self setCurrentWeatherDescription];    //update the short description of the current weather
+    
+    //and then fetch current data for that location
+    NSString* theCityName = self.weatherDictionary[@"city"][@"name"];
+    [self fetchWeatherForCity:theCityName];
 }
 
 //----------------------------------------------------------------------------------
@@ -106,7 +125,9 @@
 //callback to refresh the weatherTable when it's pulled.
 - (void)refresh:(UIRefreshControl *)refreshControl {
     
-    [self getWeatherAtCurrentLocation];
+    //[self getWeatherAtCurrentLocation];
+     NSString* theCityName = self.weatherDictionary[@"city"][@"name"];
+    [self fetchWeatherForCity:theCityName];
     
     // Do your job, when done:
     [refreshControl endRefreshing];
@@ -116,13 +137,13 @@
 //  fetchWeatherForCity
 //----------------------------------------------------------------------------------
 //use the current location to fetch the weather
--(void)fetchWeatherForCity:(NSString*)inCityID{
+-(void)fetchWeatherForCity:(NSString*)inCityName{
     
     NSString* theAppID = @"16b0456f011b3fb9f3dc9840966f9966";
     
     //build the URL using the information held by the location variable
     NSString* theString = [NSString stringWithFormat:@"http://api.openweathermap.org/data/2.5/forecast/daily?q=%@&cnt=7&units=imperial&APPID=%@",
-                           inCityID, theAppID];
+                           inCityName, theAppID];
     NSURL*  theURL = [NSURL URLWithString: theString];
     
     //build the request to openweathermap
@@ -131,6 +152,10 @@
         NSData* theReceivedData =  [NSData dataWithContentsOfURL:location];
         //serialize the NSData into an NSDictionary
         self.weatherDictionary = [NSJSONSerialization JSONObjectWithData:theReceivedData options:(NSJSONReadingMutableLeaves + NSJSONReadingMutableContainers) error:nil];
+        //now get the icons for each day's weather
+        [self fetchWeatherIcons];
+        //save off the current weather dictionary
+        [self saveData];
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.weatherTable reloadData];
@@ -166,6 +191,8 @@
         NSData* theReceivedData =  [NSData dataWithContentsOfURL:location];
         //serialize the NSData into an NSDictionary
         self.weatherDictionary = [NSJSONSerialization JSONObjectWithData:theReceivedData options:(NSJSONReadingMutableLeaves + NSJSONReadingMutableContainers) error:nil];
+        //now get the icons for each day's weather
+        [self fetchWeatherIcons];
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.weatherTable reloadData];
@@ -183,32 +210,41 @@
  }
 
 //----------------------------------------------------------------------------------
-//  fetchWeatherIcon
+//  fetchWeatherIcons
 //----------------------------------------------------------------------------------
-//use the current location to fetch the weather
--(void)fetchWeatherIcon:(NSString *)inIconString{
+//fetch the appropriate icon for each day's weather
+-(void)fetchWeatherIcons{
     
+    for (int day=0; day<7; day++){
+        //build the URL for the correct image
+        
+        NSString* theString = [NSString stringWithFormat:@"http://api.openweathermap.org/img/w/%@.png",
+                               self.weatherDictionary[@"list"][day][@"weather"][0][@"icon"]];
+        NSURL*  theURL = [NSURL URLWithString: theString];
     
-    //build the URL for the correct image
-    NSString* theString = [NSString stringWithFormat:@"http://api.openweathermap.org/img/w/%@.png",
-                           inIconString];
-    NSURL*  theURL = [NSURL URLWithString: theString];
-    
-    //build the request to openweathermap
-    NSURLSessionDownloadTask *getWeatherTask = [[NSURLSession sharedSession] downloadTaskWithURL:theURL completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
+        //build the request to openweathermap
+        NSURLSessionDownloadTask *getWeatherIcon = [[NSURLSession sharedSession] downloadTaskWithURL:theURL completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
+            
+            UIImage* theImage =  [UIImage imageWithData: [NSData dataWithContentsOfURL:location]];
+            [self.weatherImage replaceObjectAtIndex:day withObject:theImage];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSIndexPath* rowToReload = [NSIndexPath indexPathForRow:day inSection:0];
+                NSArray* rowsToReload = [NSArray arrayWithObjects:rowToReload, nil];
+                [self.weatherTable reloadRowsAtIndexPaths:rowsToReload withRowAnimation:UITableViewRowAnimationFade];
+                
+                if (day == 0){
+                    [self.weatherIcon setImage:self.weatherImage[day] ];
+                    }
+            });
+        }];
         
-        UIImage* theImage =  [UIImage imageWithData: [NSData dataWithContentsOfURL:location]];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.weatherIcon setImage:theImage];
-        });
-        
-        
-    }];
-    
-    [getWeatherTask resume];
+        [getWeatherIcon resume];
+    }
     
 }
+
+
 //----------------------------------------------------------------------------------
 //  setCurrentCityText
 //----------------------------------------------------------------------------------
@@ -244,9 +280,6 @@
     //get the current short weather description
     self.weatherDescriptionLabel.text = todaysWeatherDecription;
     
-    //get the correct icon for this weather
-    NSString* theWeatherIcon = theWeatherInfoDict[@"icon"];
-    [self fetchWeatherIcon:theWeatherIcon];
 }
 
 //----------------------------------------------------------------------------------
@@ -373,7 +406,7 @@
     NSTimeInterval thirtyMinutes = 30*60;   //30 minutes * 60 seconds/minute
     if (fabs(howRecent) > thirtyMinutes) {
         
-        [self getWeatherAtCurrentLocation];
+        //[self getWeatherAtCurrentLocation];
         self.previousUpdate = eventDate;
     }
     
@@ -430,6 +463,13 @@
     
     UILabel *theLowLabel = (UILabel *)[cell viewWithTag:400];
     theLowLabel.text = [NSString stringWithFormat:@"%.0f", theLowTemp];
+    
+    UIImageView* theIcon = (UIImageView*)[cell viewWithTag:500];
+    if ([self.weatherImage objectAtIndex:indexPath.row] != [NSNull null]){
+
+        UIImage* theImage = (UIImage*)(self.weatherImage[indexPath.row]);
+        [theIcon setImage:theImage];
+        }
     
     return cell;
 }
