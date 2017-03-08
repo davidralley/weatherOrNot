@@ -106,6 +106,8 @@
          // There won't be any cached data on the first run, so we expect to be here initially
          // Surpress any unarchiving exceptions and continue with nil
          NSLog(@"Weather table from cache was failed with exception: %@", [exception reason]);
+         //there was no cached data, so load the weather for the current location
+         [self getWeatherAtCurrentLocation];
      }
     
     //populate the UI with that data
@@ -280,32 +282,6 @@
     //get the current short weather description
     self.weatherDescriptionLabel.text = todaysWeatherDecription;
     
-}
-
-//----------------------------------------------------------------------------------
-//  notifyIfRainInForecast
-//----------------------------------------------------------------------------------
-// show a notification if there's rain expected in the next 48 hours
--(BOOL)isRainInForecast{
-    
-    NSArray*    theForecastArray = self.weatherDictionary[@"list"];
-    NSDictionary* theDailyForecast = theForecastArray[0];
-    
-    NSArray* theWeatherInfo = theDailyForecast[@"weather"];
-    NSDictionary* theWeatherInfoDict= theWeatherInfo[0];
-    NSString* theWeatherDecription = theWeatherInfoDict[@"description"];
-    BOOL rainToday = [theWeatherDecription containsString:@"rain"];
-    
-    theDailyForecast = theForecastArray[1];
-    theWeatherInfo = theDailyForecast[@"weather"];
-    theWeatherInfoDict= theWeatherInfo[0];
-    theWeatherDecription = theWeatherInfoDict[@"description"];
-    BOOL rainTomorrow = [theWeatherDecription containsString:@"rain"];
-    
-    if (rainToday || rainTomorrow)
-        return true;
-    else
-        return false;
 }
 
 

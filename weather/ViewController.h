@@ -15,7 +15,7 @@
 @property (strong, nonatomic) CLLocation*        currentLocation;       //the current location of the phone
 @property (strong, nonatomic) NSDictionary*      weatherDictionary;     //the latest weather information retrieved from openweathermap
 @property (strong, nonatomic) NSDictionary*      cityDictionary;        //dictionary of possible US city names
-@property (strong, nonatomic) NSMutableArray*    weatherImage;           //icons for the day's forecast
+@property (strong, nonatomic) NSMutableArray*    weatherImage;          //icons for the day's forecast
 @property (strong, nonatomic) NSDate*            previousUpdate;       //the time of the previous weather update
 
 @property (strong) IBOutlet UITableView* weatherTable;
