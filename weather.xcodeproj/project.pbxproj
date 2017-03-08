@@ -15,8 +15,8 @@
 		631F681E1BA49F7500865ED0 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 631F681C1BA49F7500865ED0 /* LaunchScreen.xib */; };
 		6370132E1BA4AD1500F3907A /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6370132D1BA4AD1500F3907A /* CoreLocation.framework */; };
 		637013311BA608BB00F3907A /* sunnySky.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 637013301BA608BB00F3907A /* sunnySky.jpg */; };
-		639ED96E1E6FF10500AA4E20 /* city.list.json in Resources */ = {isa = PBXBuildFile; fileRef = 639ED96D1E6FF10500AA4E20 /* city.list.json */; };
-		639ED96F1E6FF10500AA4E20 /* city.list.json in Resources */ = {isa = PBXBuildFile; fileRef = 639ED96D1E6FF10500AA4E20 /* city.list.json */; };
+		639ED9711E6FF30F00AA4E20 /* city.list.us.json in Resources */ = {isa = PBXBuildFile; fileRef = 639ED9701E6FF30F00AA4E20 /* city.list.us.json */; };
+		639ED9721E6FF30F00AA4E20 /* city.list.us.json in Resources */ = {isa = PBXBuildFile; fileRef = 639ED9701E6FF30F00AA4E20 /* city.list.us.json */; };
 		63B53BBC1BAC7B7400237426 /* WeatherUnitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B53BBB1BAC7B7400237426 /* WeatherUnitTests.m */; };
 		63B53BBE1BAD0CC800237426 /* libOCMock.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63B53BBD1BAD0CC800237426 /* libOCMock.a */; };
 /* End PBXBuildFile section */
@@ -46,7 +46,7 @@
 		631F68281BA49F7500865ED0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6370132D1BA4AD1500F3907A /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		637013301BA608BB00F3907A /* sunnySky.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = sunnySky.jpg; sourceTree = "<group>"; };
-		639ED96D1E6FF10500AA4E20 /* city.list.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = city.list.json; sourceTree = "<group>"; };
+		639ED9701E6FF30F00AA4E20 /* city.list.us.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = city.list.us.json; sourceTree = "<group>"; };
 		63B53BBB1BAC7B7400237426 /* WeatherUnitTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeatherUnitTests.m; sourceTree = "<group>"; };
 		63B53BBD1BAD0CC800237426 /* libOCMock.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libOCMock.a; path = usr/lib/libOCMock.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -111,8 +111,8 @@
 			isa = PBXGroup;
 			children = (
 				631F680E1BA49F7500865ED0 /* Info.plist */,
-				639ED96D1E6FF10500AA4E20 /* city.list.json */,
 				631F680F1BA49F7500865ED0 /* main.m */,
+				639ED9701E6FF30F00AA4E20 /* city.list.us.json */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -223,8 +223,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				631F68191BA49F7500865ED0 /* Main.storyboard in Resources */,
-				639ED96E1E6FF10500AA4E20 /* city.list.json in Resources */,
 				631F681E1BA49F7500865ED0 /* LaunchScreen.xib in Resources */,
+				639ED9711E6FF30F00AA4E20 /* city.list.us.json in Resources */,
 				631F681B1BA49F7500865ED0 /* Images.xcassets in Resources */,
 				637013311BA608BB00F3907A /* sunnySky.jpg in Resources */,
 			);
@@ -234,7 +234,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				639ED96F1E6FF10500AA4E20 /* city.list.json in Resources */,
+				639ED9721E6FF30F00AA4E20 /* city.list.us.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

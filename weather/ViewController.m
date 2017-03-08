@@ -25,6 +25,15 @@
 //    UIUserNotificationSettings* notificationSettings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert categories:nil];
 //    [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
     
+    NSError* error = nil;
+    NSString *path = [[NSBundle mainBundle] pathForResource: @"city.list.us" ofType: @"json"];
+    NSString *theCityStrings = [NSString stringWithContentsOfFile: path encoding:NSUTF8StringEncoding error: &error];
+    NSData *data = [theCityStrings dataUsingEncoding:NSUTF8StringEncoding];
+    self.cityDictionary = [NSJSONSerialization JSONObjectWithData:data
+                                                                 options:kNilOptions
+                                                                   error:&error];
+    
+    
     [self loadData];    //load the data stored from the last run
     
     //register for notification when the app is terminated, so we can save our current data
@@ -107,13 +116,13 @@
 //  fetchWeatherForCity
 //----------------------------------------------------------------------------------
 //use the current location to fetch the weather
--(void)fetchWeatherForCity{
+-(void)fetchWeatherForCity:(NSString*)inCityID{
     
     NSString* theAppID = @"16b0456f011b3fb9f3dc9840966f9966";
     
     //build the URL using the information held by the location variable
-    NSString* theString = [NSString stringWithFormat:@"http://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f&cnt=16&units=imperial&APPID=%@",
-                           self.currentLocation.coordinate.latitude, self.currentLocation.coordinate.longitude, theAppID];
+    NSString* theString = [NSString stringWithFormat:@"http://api.openweathermap.org/data/2.5/forecast/daily?q=%@&cnt=7&units=imperial&APPID=%@",
+                           inCityID, theAppID];
     NSURL*  theURL = [NSURL URLWithString: theString];
     
     //build the request to openweathermap
@@ -124,7 +133,7 @@
         self.weatherDictionary = [NSJSONSerialization JSONObjectWithData:theReceivedData options:(NSJSONReadingMutableLeaves + NSJSONReadingMutableContainers) error:nil];
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            //[self.weatherTable reloadData];
+            [self.weatherTable reloadData];
             [self setCurrentCityText];          //make sure the city text is up-to-date
             [self setCurrentTemperature];       //update the current temperature
             [self setCurrentWeatherDescription];    //update the short description of the current weather
@@ -147,7 +156,7 @@
     NSString* theAppID = @"16b0456f011b3fb9f3dc9840966f9966";
     
     //build the URL using the information held by the location variable
-    NSString* theString = [NSString stringWithFormat:@"http://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f&cnt=16&units=imperial&APPID=%@",
+    NSString* theString = [NSString stringWithFormat:@"http://api.openweathermap.org/data/2.5/forecast/daily?lat=%f&lon=%f&cnt=7&units=imperial&APPID=%@",
                         self.currentLocation.coordinate.latitude, self.currentLocation.coordinate.longitude, theAppID];
     NSURL*  theURL = [NSURL URLWithString: theString];
    
@@ -159,9 +168,9 @@
         self.weatherDictionary = [NSJSONSerialization JSONObjectWithData:theReceivedData options:(NSJSONReadingMutableLeaves + NSJSONReadingMutableContainers) error:nil];
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            //[self.weatherTable reloadData];
-            [self setCurrentCityText];          //make sure the city text is up-to-date
-            [self setCurrentTemperature];       //update the current temperature
+            [self.weatherTable reloadData];
+            [self setCurrentCityText];              //make sure the city text is up-to-date
+            [self setCurrentTemperature];           //update the current temperature
             [self setCurrentWeatherDescription];    //update the short description of the current weather
         });
         
@@ -206,9 +215,8 @@
 // set the current city label in the interface
 -(void)setCurrentCityText{
     
-    NSString* theCityName = self.weatherDictionary[@"name"];
+    NSString* theCityName = self.weatherDictionary[@"city"][@"name"];
     self.cityLabel.text = theCityName;
-    [self.cityLabel setNeedsDisplay];
 }
 
 //----------------------------------------------------------------------------------
@@ -217,8 +225,8 @@
 // set the current temperature lablel
 -(void)setCurrentTemperature{
 
-    NSDictionary*    theCurrentConditions = self.weatherDictionary[@"main"];
-    NSNumber* theTemperature = theCurrentConditions[@"temp"];
+    NSDictionary*    theCurrentConditions = self.weatherDictionary[@"list"][0];
+    NSNumber* theTemperature = theCurrentConditions[@"temp"][@"day"];
     
     self.temperatureLabel.text = [NSString stringWithFormat:@"%.0f\u00B0", [theTemperature floatValue]];
 }
@@ -229,7 +237,7 @@
 // set the current weather description lablel
 -(void)setCurrentWeatherDescription{
     
-    NSArray* theWeatherInfo = self.weatherDictionary[@"weather"];
+    NSArray* theWeatherInfo = self.weatherDictionary[@"list"][0][@"weather"];
     NSDictionary* theWeatherInfoDict= theWeatherInfo[0];
     NSString* todaysWeatherDecription = theWeatherInfoDict[@"description"];
     
@@ -428,15 +436,14 @@
 
 #pragma mark- search bar
 //—————————————————————————————————————————————————————————————————————————————————————————————
-//                  searchBar:textDidChange
+//                  searchBar:searchBarSearchButtonClicked
 //—————————————————————————————————————————————————————————————————————————————————————————————
 //  the user initiated a search, so look up that location
-
-
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar{
     
     NSString* theNewCity = searchBar.text;
+    //[self findCityIDForCity];
     [self fetchWeatherForCity:theNewCity];
 }
 
